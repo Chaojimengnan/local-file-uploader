@@ -25,8 +25,8 @@ int main()
         std::cout << "Listen to " << host << ":" << port << "\n";
         httplib::Server server;
 
-        if (!server.set_mount_point("/", "./web"))
-            throw std::runtime_error("Can't find directory './web'");
+        if (!server.set_mount_point("/", get_base_path() + "web"))
+            throw std::runtime_error("Can't find directory 'web'");
 
         server.Post("/upload_text", [&chat_history_path](const httplib::Request& req, httplib::Response& res) {
             try {

@@ -4,6 +4,26 @@
 #include <fstream>
 #include <stdexcept>
 
+#ifdef _WIN32
+#    include <Windows.h>
+#else
+#    include <unistd.h>
+#endif
+
+#include <filesystem>
+
+std::string get_base_path()
+{
+    char buffer[512];
+#ifdef _WIN32
+    GetModuleFileNameA(nullptr, buffer, 512);
+#else
+    readlink("/proc/self/exe", buffer, 512);
+#endif
+    std::filesystem::path my_path = buffer;
+    return my_path.remove_filename().string();
+}
+
 struct config_helper::config_helper_impl
 {
     nlohmann::json json_;
@@ -21,7 +41,7 @@ config_helper& config_helper::operator=(config_helper&&) noexcept = default;
 void config_helper::load_config()
 {
     impl_->json_.clear();
-    std::ifstream config_file(config_path);
+    std::ifstream config_file(get_base_path() + config_path);
 
     if (!config_file)
         throw std::runtime_error("Can't find config file");

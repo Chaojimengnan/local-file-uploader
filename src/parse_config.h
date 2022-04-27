@@ -2,6 +2,8 @@
 #include <memory>
 #include <string>
 
+std::string get_base_path();
+
 class config_helper
 {
 public:

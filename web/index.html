@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0">
+    <title>local file uploader</title>
+
+    <script>
+        var xhr = new XMLHttpRequest()
+        xhr.onload = upload_complete
+        xhr.onerror = upload_fails
+
+        function upload_text() {
+            var text = document.getElementById("input_text").value
+
+            var url = "http://" + window.location.host + "/upload_text"
+            var form = new FormData()
+            form.append("text", text)
+
+            xhr.open("post", url, true)
+
+            xhr.send(form)
+            alert("Start to send")
+        }
+
+        function upload_file() {
+            var file_obj = document.getElementById("input_file").files
+
+            var url = "http://" + window.location.host + "/upload_files"
+            var form = new FormData()
+
+            form.append("file_size", file_obj.length)
+            for (let index = 0; index < file_obj.length; index++) {
+                const element = file_obj[index];
+                form.append("files" + index, element)
+            }
+
+            xhr.open("post", url, true)
+            xhr.send(form)
+            alert("Start to send")
+        }
+
+        function upload_complete(event) {
+            var is_succeed = xhr.getResponseHeader("upload_state");
+            if (is_succeed == "1")
+                alert("Upload complete!")
+            else alert("Upload fails!")
+        }
+
+        function upload_fails(event) {
+            alert("Upload fails!")
+        }
+
+        function cancle_upload() {
+            xhr.abort()
+        }
+    </script>
+</head>
+
+<body>
+    <p>
+        <textarea name="text" id="input_text" cols="30" rows="10"></textarea>
+        <input type="button" value="Upload text" onclick="upload_text()">
+    </p>
+    <p>
+        <input type="file" name="files" id="input_file" multiple>
+        <input type="button" value="Upload files" onclick="upload_file()">
+        <input type="button" value="Cancle upload files" onclick="cancle_upload()">
+    </p>
+</body>
+
+</html>
